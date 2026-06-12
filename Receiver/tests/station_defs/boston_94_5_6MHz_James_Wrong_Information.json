@@ -1,0 +1,44 @@
+[
+    {
+        "frequency": 94500000,
+        "bandwidth": 400000,
+        "coords": [42.307597, -71.223666],
+        "callsign": "WJMN",
+        "StationID":1
+    },
+    {
+        "frequency": 95300000,
+        "bandwidth": 400000,
+        "coords": [42.352320, -71.056439],
+        "callsign": "WHRB",
+        "StationID":2
+    },
+    {
+        "frequency": 92900000,
+        "bandwidth": 400000,
+        "coords": [42.347320, -71.082552],
+        "callsign": "WBOS",
+        "StationID":3
+    },    
+    {
+        "frequency": 92500000,
+        "bandwidth": 400000,
+        "coords": [42.773146, -71.099780],
+        "callsign": "WXRV",
+        "StationID":4
+    },
+    {
+        "frequency": 96900000,
+        "bandwidth": 400000,
+        "coords": [42.347320, -71.082552],
+        "callsign": "WBQT",
+        "StationID":5
+    },
+    {
+        "frequency": 96500000,
+        "bandwidth": 400000,
+        "coords": [42.352250, -71.056278],
+        "callsign": "W243DC",
+        "StationID":6
+    }
+]
