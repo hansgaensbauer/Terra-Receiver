@@ -1,0 +1,44 @@
+[
+    {
+        "frequency": 103500000,
+        "bandwidth": 400000,
+        "coords": [39.733056, -105.236111],
+        "callsign": "KRFX",
+        "StationID":7
+    },
+    {
+        "frequency": 104300000,
+        "bandwidth": 400000,
+        "coords": [39.6958, -105.1655],
+        "callsign": "KKFN",
+        "StationID":8
+    },
+    {
+        "frequency": 105100000,
+        "bandwidth": 400000,
+        "coords": [39.6, -105.21],
+        "callsign": "KXKL-FM",
+        "StationID":9
+    },    
+    {
+        "frequency": 105900000,
+        "bandwidth": 400000,
+        "coords": [39.7328, -105.2361],
+        "callsign": "KALC",
+        "StationID":10
+    },
+    {
+        "frequency": 106700000,
+        "bandwidth": 400000,
+        "coords": [39.732778, -105.235556],
+        "callsign": "KWBL",
+        "StationID":11
+    },
+    {
+        "frequency": 107500000,
+        "bandwidth": 400000,
+        "coords": [39.696, -105.166],
+        "callsign": "KQKS",
+        "StationID":12
+    }
+]
