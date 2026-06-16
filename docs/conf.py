@@ -32,3 +32,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+html_favicon = '_static/favicon.png'
+html_logo = '_static/nav-logo.png'

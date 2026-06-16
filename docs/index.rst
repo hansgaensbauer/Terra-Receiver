@@ -13,8 +13,9 @@ This is documentation for the software required to set up a Terra location recei
    :maxdepth: 2
    :caption: Contents:
 
-   run_terra_client
+   about
+   getting_started
+   api
    terra_client
    terra_dsp
-   terra_dsp.tests
 
