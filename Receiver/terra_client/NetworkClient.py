@@ -1,8 +1,11 @@
 from terra_dsp.Station import Station
 from terra_dsp.Feature import Feature
 import json
+import os
 import pickle
 import requests
+import msgpack
+import pygeohash as pgh
 
 class NetworkClient:
     """Prototype class for receiver network connections
@@ -17,9 +20,9 @@ class NetworkClient:
         pass
 
 
-class APIClient(NetworkClient):
-    """A NetworkClient that uses an internet connection to fetch features from the 
-    Terra backend using a the Terra API.
+class LocalClient(NetworkClient):
+    """A NetworkClient that uses an internet connection to fetch features from a Local 
+    Terra backend..
 
     :param url: API URL
     :type url: str
@@ -67,7 +70,6 @@ class APIClient(NetworkClient):
         :return: list of nearby stations with available features.
         :rtype: list[Station]
         """        
-        # TODO James: Make this better eventually 3.15.2026
         url = self.url + f'stations/?region={region}&time={start_time}'
         response = requests.get(url)
         if response.status_code == 200:
@@ -75,6 +77,91 @@ class APIClient(NetworkClient):
             stations = []
             for station_resp in resp:
                 stations.append(Station(station_resp[2]*1000000, 400_000, [float(station_resp[3]), float(station_resp[4])], station_resp[1], station_resp[0]))
+            return stations
+        else:
+            print(f'Error: {response.status_code}') 
+
+class APIClient(NetworkClient):
+    """A NetworkClient that uses an internet connection to fetch features from the 
+    Terra backend using a the Terra API.
+
+    :param url: API URL
+    :type url: str
+    """    
+    def __init__(self, url):
+        """Class constructor
+        """        
+        super().__init__()
+        self.url = url
+
+    def get_token(self):
+        COGNITO_DOMAIN = os.environ['COGNITO_DOMAIN']
+        CLIENT_ID = os.environ['CLIENT_ID']
+        CLIENT_SECRET = os.environ['CLIENT_SECRET']
+        SCOPE = 'default-m2m-resource-server-coqa-/read'
+        response = requests.post(
+            f'{COGNITO_DOMAIN}/oauth2/token',
+            data={
+                'grant_type': 'client_credentials',
+                'client_id': CLIENT_ID,
+                'client_secret': CLIENT_SECRET,
+                'scope': SCOPE,
+            },
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+        response.raise_for_status()
+        return response.json()['access_token']
+
+    def get_features(self, region, time):
+        """Retrieve features from the backend.
+
+        :param region: 3 letter geohash of client receiver location. Not used
+        :type region: str
+        :param time: Receive window start time in nanoseconds from the epoch.
+        :type time: int
+
+        :return: Dictionary mapping StationIDs to a list of Feature objects for that station.
+        :rtype: dict
+        """        
+        token = self.get_token()
+        station_ids = [station.StationID for station in self.stations]
+
+        response = requests.get(
+            self.ufl + '/features',
+            params={
+                'station_ids': ','.join(station_ids),
+                'time_from': time - 2_000_000_000,
+                'time_to': time + 2_000_000_000,
+            },
+            headers={'Authorization': f'Bearer {token}'},
+        )
+        response.raise_for_status()
+        return msgpack.unpackb(response.content, raw=False)
+
+    def get_served_stations(self, region, start_time):
+        """Find stations with recent features in the region.
+
+        :param region: geohash for the region.
+        :type region: str
+        :param start_time: Receive window start time in nanoseconds from the epoch. Not used.
+        :type start_time: int
+
+        :return: list of nearby stations with available features.
+        :rtype: list[Station]
+        """        
+        lat, lon = pgh.decode(geohash=region)
+        response = requests.get(
+            self.url + '\stations',
+            params={
+                'lat':str(lat),
+                'lon':str(lon)
+            }
+                                )
+        if response.status_code == 200:
+            resp = response.json()
+            stations = []
+            for station_resp in resp:
+                stations.append(Station(station_resp[5], station_resp[0], [float(station_resp[2]), float(station_resp[3])], station_resp[1], station_resp[0]))
             return stations
         else:
             print(f'Error: {response.status_code}') 
