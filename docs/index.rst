@@ -18,4 +18,5 @@ This is documentation for the software required to set up a Terra location recei
    api
    terra_client
    terra_dsp
+   related_links
 

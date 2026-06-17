@@ -80,6 +80,11 @@ The parameters are:
 :chunk_length: The computer-side buffer size for RF data.
 :source_kwargs: Keyword arguments to be passed to the radio constructor. These will depend on the radio.
 
+
+Some radios have local oscillators that are so far from the correct frequency that they will not be 
+able to correct for it automatically. It is possible to override the initial LO offset parameter in 
+LocationPipeline for a specific radio. 
+
 Environment Setup
 -----------------
 We highly recommend using a .env file to configure the receiver. A good starting point contains the following:
