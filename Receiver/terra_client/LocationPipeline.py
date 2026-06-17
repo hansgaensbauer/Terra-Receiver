@@ -143,7 +143,6 @@ class LocationPipeline:
         #get features
         print('Retrieving features from the server...')
         features = self.network_client.get_features(self.stations, rx_start_time)
-
         sig, ax = plt.subplots()
         plot_signal_timing(features,len(self.rf_data),4e6,rx_start_time, ax=ax, show=False)
         try:

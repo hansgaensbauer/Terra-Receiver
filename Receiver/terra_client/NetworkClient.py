@@ -6,6 +6,7 @@ import pickle
 import requests
 import msgpack
 import pygeohash as pgh
+import numpy as np
 
 class NetworkClient:
     """Prototype class for receiver network connections
@@ -136,7 +137,19 @@ class APIClient(NetworkClient):
             headers={'Authorization': f'Bearer {token}'},
         )
         response.raise_for_status()
-        return msgpack.unpackb(response.content, raw=False)
+        msg = msgpack.unpackb(response.content, raw=False)
+        features = {}
+        for stationid in msg.keys():
+            for featuredict in msg[stationid]:
+                feature = Feature(featuredict['timestamp'],
+                                   featuredict['station_id'],
+                                     np.array(featuredict['real'], dtype=np.complex64) + 
+                                     1j*np.array(featuredict['imag'], dtype=np.complex64))
+                if feature.StationID in features.keys():
+                    features[feature.StationID].append(feature)
+                else:
+                    features[feature.StationID] = [feature]
+        return features
 
     def get_served_stations(self, region, start_time):
         """Find stations with recent features in the region.
