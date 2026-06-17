@@ -112,11 +112,11 @@ class APIClient(NetworkClient):
         response.raise_for_status()
         return response.json()['access_token']
 
-    def get_features(self, region, time):
+    def get_features(self, stations, time):
         """Retrieve features from the backend.
 
-        :param region: 3 letter geohash of client receiver location. Not used
-        :type region: str
+        :param stations: List of Station objects to request features for.
+        :type region: List[Station]
         :param time: Receive window start time in nanoseconds from the epoch.
         :type time: int
 
@@ -124,14 +124,14 @@ class APIClient(NetworkClient):
         :rtype: dict
         """        
         token = self.get_token()
-        station_ids = [station.StationID for station in self.stations]
+        station_ids = [station.StationID for station in stations]
 
         response = requests.get(
-            self.ufl + '/features',
+            self.url + '/features',
             params={
                 'station_ids': ','.join(station_ids),
-                'time_from': time - 2_000_000_000,
-                'time_to': time + 2_000_000_000,
+                'time_from': str(time - 2_000_000_000),
+                'time_to': str(time + 2_000_000_000),
             },
             headers={'Authorization': f'Bearer {token}'},
         )
@@ -150,18 +150,24 @@ class APIClient(NetworkClient):
         :rtype: list[Station]
         """        
         lat, lon = pgh.decode(geohash=region)
+        print(self.url + '/stations')
         response = requests.get(
-            self.url + '\stations',
+            self.url + '/stations',
             params={
                 'lat':str(lat),
                 'lon':str(lon)
             }
-                                )
+            )
+        response.raise_for_status()
         if response.status_code == 200:
             resp = response.json()
             stations = []
-            for station_resp in resp:
-                stations.append(Station(station_resp[5], station_resp[0], [float(station_resp[2]), float(station_resp[3])], station_resp[1], station_resp[0]))
+            for station_resp in resp['stations']:
+                stations.append(Station(int(station_resp['frequency']),
+                                         int(station_resp['bandwidth']), 
+                                         [float(station_resp['lat']), float(station_resp['lon'])], 
+                                         station_resp['callsign'], 
+                                         station_resp['station_id']))
             return stations
         else:
             print(f'Error: {response.status_code}') 
@@ -208,10 +214,10 @@ class FileClient(NetworkClient):
         """     
         return self.stations
     
-    def get_features(self, region, time):
+    def get_features(self, stations, time):
         """Retrieve features from the file.
 
-        :param region: 3 letter geohash of client receiver location. Not used.
+        :param stations: 3 letter geohash of client receiver location. Not used.
         :type region: str
         :param time: Receive window start time in nanoseconds from the epoch. Not used.
         :type time: int
