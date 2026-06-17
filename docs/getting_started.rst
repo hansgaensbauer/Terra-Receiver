@@ -86,14 +86,14 @@ We highly recommend using a .env file to configure the receiver. A good starting
 
 .. code-block:: bash
 
-    CLIENT_GEOHASH=drt
+    CLIENT_GEOHASH=drt2
     DATASOURCE_FILE=config/sources/[your-radio-json-file]
     SERVER_URL=https://ajtaaxxrmj.execute-api.us-east-1.amazonaws.com/dev
     FEATURE_CLIENT_ID=[your-client-id]
     FEATURE_CLIENT_SECRET=[your-client-secret]
-    AUTH_DOMAIN='https://us-east-1cssiwx7hl.auth.us-east-1.amazoncognito.com'
+    COGNITO_DOMAIN='https://us-east-1cssiwx7hl.auth.us-east-1.amazoncognito.com'
 
-CLIENT-GEOHASH is required to identify the region for which stations should be provided, we recommend a 3-character 
+CLIENT-GEOHASH is required to identify the region for which stations should be provided, we recommend a 4-character 
 geohash for the receiver region.
 
 Software defined radios are notoriously tricky to set up. We highly recommend `radioconda`_. Install radioconda, then

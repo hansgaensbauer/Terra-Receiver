@@ -97,9 +97,11 @@ class LocationPipeline:
         print(f'\tLoaded {len(self.rf_data)} samples.')
 
         # Save raw data
-        with open(f'Logs/{rx_start_time}.raw', 'wb') as f:
-            self.rf_data.astype(np.complex64).tofile(f)
-
+        try:
+            with open(f'Logs/{rx_start_time}.raw', 'wb') as f:
+                self.rf_data.astype(np.complex64).tofile(f)
+        except FileNotFoundError:
+            pass
 
         print(rx_start_time)
         self.stations = self.network_client.get_served_stations(self.region, rx_start_time)
@@ -140,14 +142,20 @@ class LocationPipeline:
         time.sleep(10)
         #get features
         print('Retrieving features from the server...')
-        features = self.network_client.get_features(self.region, rx_start_time)
+        features = self.network_client.get_features(self.stations, rx_start_time)
 
         sig, ax = plt.subplots()
         plot_signal_timing(features,len(self.rf_data),4e6,rx_start_time, ax=ax, show=False)
-        plt.savefig(f"Logs/featuretiming.png", dpi=300, bbox_inches='tight')
+        try:
+            plt.savefig(f"Logs/featuretiming.png", dpi=300, bbox_inches='tight')
+        except FileNotFoundError:
+            pass
         plt.close('all')
 
         print(f'\tReceived {len(features)} feature arrays.')
+        if(len(features) == 0):
+            time.sleep(4) #Wait for the backend to wake up the stations
+            return None
         
         print('Getting Best Signal...')
         self.best_station_index = 1# self.get_best_station()
@@ -187,7 +195,10 @@ class LocationPipeline:
             
             sig, ax = plt.subplots()
             plot_signal_timing(self.valid_features,len(self.rf_data),4e6, rx_start_time + self.clock_offset,ax=ax, show=False)
-            plt.savefig(f"Logs/{best_station_id}_featuretiming_postcal.png", dpi=300, bbox_inches='tight')
+            try:
+                plt.savefig(f"Logs/{best_station_id}_featuretiming_postcal.png", dpi=300, bbox_inches='tight')
+            except FileNotFoundError:
+                pass
             plt.close('all')
 
             if(self.resample_factor is None):
@@ -338,7 +349,10 @@ class LocationPipeline:
         print(f'Expected last idx time: {max_timestamp}')
         print(f'Actual Last timestamp location: {rx_start_time + np.argmax(corr)/fs*1e9}')
         print((max_timestamp - rx_start_time - round(np.argmax(corr)/self.fractional_fs_demod))/1e9)
-        plt.savefig(f"Logs/clockoffset.png", dpi=300, bbox_inches='tight') 
+        try:
+            plt.savefig(f"Logs/clockoffset.png", dpi=300, bbox_inches='tight') 
+        except FileNotFoundError:
+            pass
         plt.close('all')
         # assert(self._check_corr(corr))
         if(self._check_corr(corr, corr_z_thres = 5)):
@@ -505,7 +519,10 @@ class LocationPipeline:
         ax[1].plot(corr)
         # print(sample)
         # plt.legend([str(i) for i in range(10)])
-        plt.savefig(f"Logs/{station_name}_pseudorange.png", dpi=300, bbox_inches='tight') 
+        try:
+            plt.savefig(f"Logs/{station_name}_pseudorange.png", dpi=300, bbox_inches='tight') 
+        except FileNotFoundError:
+            pass
         plt.close('all')
         if(self._check_corr(corr, corr_z_thres = 5.5)):
             return (sample-pad*self.decimation)/self.fs_demod/self.decimation
