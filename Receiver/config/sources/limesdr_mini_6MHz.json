@@ -1,7 +1,7 @@
 {
     "driver":"soapy",
     "fs":6000000,
-    "fc":94900000,
+    "fc":95400000,
     "chunk_length":7200000,
     "source_kwargs":{
         "device_string":"driver=lime",

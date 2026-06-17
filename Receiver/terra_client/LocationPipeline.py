@@ -106,10 +106,13 @@ class LocationPipeline:
         print(rx_start_time)
         self.stations = self.network_client.get_served_stations(self.region, rx_start_time)
         print(f'\tStations: {self.stations}')
+        for station in self.stations:
+            print(station)
 
         print('Demodulating All Signals...\n')
 
-        if(True):
+        bb_freqs = [station.frequency - self.data_source.fc for station in self.stations]
+        if(False):
             NTAPS = 60*16
 
             f_bb = np.array([station.frequency - self.data_source.fc for station in self.stations])
@@ -132,8 +135,7 @@ class LocationPipeline:
 
             taps = compute_pfb_channelizer(self.data_source.chunk_length, NTAPS, channels)
             channelizer = get_pfb_channelizer(taps, channels, channel_mask)
-
-            bb_freqs = [station.frequency - self.data_source.fc for station in self.stations]
+            
             self.baseband_data = channelizer(self.rf_data, bb_freqs, self.data_source.fs, 0)
 
         else:
@@ -157,7 +159,7 @@ class LocationPipeline:
             return None
         
         print('Getting Best Signal...')
-        self.best_station_index = 1# self.get_best_station()
+        self.best_station_index = self.get_best_station()
 
         best_station_id = self.stations[self.best_station_index].StationID
         print(f'\tBest station feature array has {len(features[best_station_id])} features.')

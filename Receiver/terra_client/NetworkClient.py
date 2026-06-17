@@ -131,8 +131,8 @@ class APIClient(NetworkClient):
             self.url + '/features',
             params={
                 'station_ids': ','.join(station_ids),
-                'time_from': str(time - 2_000_000_000),
-                'time_to': str(time + 2_000_000_000),
+                'time_from': str(time - 3_000_000_000),
+                'time_to': str(time + 4_000_000_000),
             },
             headers={'Authorization': f'Bearer {token}'},
         )
