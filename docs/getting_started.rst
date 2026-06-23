@@ -119,3 +119,5 @@ Web Interface
 We have provided a `leaflet`_-based map/web interface for viewing solutions and the receiver location.
 
 .. _leaflet: https://leafletjs.com/
+
+You will need Node.js and npm. In the ``Web`` folder, run ``npm init``, accept all the defaults, then run ``npm install`` and finally ``node Express.js``.
