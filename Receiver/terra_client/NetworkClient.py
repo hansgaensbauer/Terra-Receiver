@@ -97,8 +97,8 @@ class APIClient(NetworkClient):
 
     def get_token(self):
         COGNITO_DOMAIN = os.environ['COGNITO_DOMAIN']
-        CLIENT_ID = os.environ['CLIENT_ID']
-        CLIENT_SECRET = os.environ['CLIENT_SECRET']
+        CLIENT_ID = os.environ['FEATURE_CLIENT_ID']
+        CLIENT_SECRET = os.environ['FEATURE_CLIENT_SECRET']
         SCOPE = 'default-m2m-resource-server-coqa-/read'
         response = requests.post(
             f'{COGNITO_DOMAIN}/oauth2/token',
